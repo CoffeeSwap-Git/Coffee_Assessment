@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCA Coffee Value Assessment Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B4513 0%, #CD853F 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2C1810 0%, #4A2C17 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .auto-save-indicator {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .auto-save-indicator.show {
+            opacity: 1;
+        }
+
+        .action-buttons {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .action-btn.export {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        }
+
+        .action-btn.print {
+            background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+        }
+
+        .form-content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border-left: 5px solid #8B4513;
+        }
+
+        .section h2 {
+            color: #2C1810;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h2::before {
+            content: "☕";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8B4513;
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+        }
+
+        .score-group {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .score-input {
+            width: 80px !important;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .score-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .rating-guide {
+            background: #e8f4f8;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .rating-guide h4 {
+            color: #17a2b8;
+            margin-bottom: 10px;
+        }
+
+        .rating-scale {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .rating-item {
+            text-align: center;
+            font-size: 0.8rem;
+            padding: 5px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .defects-section {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+
+        .total-score {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .total-score h3 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .notes-section {
+            background: #f0f8ff;
+            border-left-color: #007bff;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #8B4513;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                font-size: 12px;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: none;
+            }
+
+            .header {
+                background: #2C1810 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .action-buttons {
+                display: none;
+            }
+
+            .section {
+                background: white !important;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+                margin-bottom: 20px;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                border: 1px solid #000;
+                background: white;
+            }
+
+            .total-score {
+                background: #28a745 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .print-qr {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                text-align: center;
+            }
+
+            .print-timestamp {
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-content {
+                padding: 20px;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+
+            .action-buttons {
+                padding: 15px;
+            }
+
+            .action-btn {
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>☕ SCA Coffee Value Assessment</h1>
+            <div class="auto-save-indicator" id="autoSaveIndicator">
+                💾 Auto-saved
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-btn export" onclick="exportToPDF()">
+                📄 Export PDF
+            </button>
+            <button class="action-btn export" onclick="exportToCSV()">
+                📊 Export CSV
+            </button>
+            <button class="action-btn export" onclick="exportToJSON()">
+                📋 Export JSON
+            </button>
+            <button class="action-btn print" onclick="printForm()">
+                🖨️ Print
+            </button>
+        </div>
+
+        <div class="form-content">
+            <div class="success-message" id="successMessage">
+                <strong>Success!</strong> Your assessment has been submitted and emailed successfully.
+            </div>
+            
+            <div class="error-message" id="errorMessage">
+                <strong>Error!</strong> There was a problem submitting your assessment. Please try again.
+            </div>
+
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <p>Submitting your assessment...</p>
+            </div>
+
+            <form id="coffeeAssessmentForm">
+                <!-- Sample Information -->
+                <div class="section">
+                    <h2>Sample Information</h2>
+                    <div class="form-group">
+                        <label for="sampleName">Coffee Name/Sample ID</label>
+                        <input type="text" id="sampleName" name="sampleName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cupper">Cupper Name</label>
+                        <input type="text" id="cupper" name="cupper" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address (receive completed form)</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                </div>
+
+                <!-- Affective Assessment -->
+                <div class="section">
+                    <h2>Affective Assessment (Quality Impression)</h2>
+                    <div class="rating-guide">
+                        <h4>Scoring Guide (1-9 Scale)</h4>
+                        <p>Rate your personal impression of quality for each attribute</p>
+                        <div class="rating-scale">
+                            <div class="rating-item"><strong>1-2</strong><br>Poor</div>
+                            <div class="rating-item"><strong>3-4</strong><br>Below Average</div>
+                            <div class="rating-item"><strong>5</strong><br>Average</div>
+                            <div class="rating-item"><strong>6-7</strong><br>Good</div>
+                            <div class="rating-item"><strong>8-9</strong><br>Excellent</div>
+                        </div>
+                    </div>
+
+                    <div class="score-group">
+                        <div>
+                            <label for="aroma">Aroma</label>
+                            <div class="score-description">Overall impression of the fragrance and aroma</div>
+                        </div>
+                        <input type="number" id="aroma" name="aroma" min="1" max="9" step="0.25" class="score-input" required>
+                    </div>
+
+                    <div class="score-group">
+                        <div>
+                            <label for="flavor">Flavor</label>
+                            <div class="score-description">Overall taste experience and flavor complexity</div>
+                        </div>
+                        <input type="number" id="flavor" name="flavor" min="1" max="9" step="0.25" class="score-input" required>
+                    </div>
+
+                    <div class="score-group">
+                        <div>
+                            <label for="aftertaste">Aftertaste/Finish</label>
+                            <div class="score-description">Length and quality of the finish</div>
+                        </div>
+                        <input type="number" id="aftertaste" name="aftertaste" min="1" max="9" step="0.25" class="score-input" required>
+                    </div>
+
+                    <div class="score-group">
+                        <div>
+                            <label for="acidity">Acidity</label>
+                            <div class="score-description">Brightness and liveliness of the coffee</div>
+                        </div>
+                        <input type="number" id="acidity" name="acidity" min="1" max="9" step="0.25" class="score-input" required>
+                    </div>
+
+                    <div class="score-group">
+                        <div>
+                            <label for="body">Body</label>
+                            <div class="score-description">Weight and texture in the mouth</div>
+                        </div>
+                        <input type="number" id="body" name="body" min="1" max="9" step="0.25" class="score-input" required>
+                    </div>
+
+                    <div class="score-group">
+                        <div>
+                            <label for="uniformity">Uniformity</label>
+                            <div class="score-description">Consistency across multiple cups</div>
+                        </div>
+                        <input type="number" id="uniformity" name="uniformity" min="1" max="9" step="0.25" class="score-input" required>
+                    </div>
+
+                    <div class="score-group">
+                        <div>
+                            <label for="balance">Balance</label>
+                            <div class="score-description">Harmony of flavor, acidity, and body</div>
+                        </div>
+                        <input type="number" id="balance" name="balance" min="1" max="9" step="0.25" class="score-input" required>
+                    </div>
+
+                    <div class="score-group">
+                        <div>
+                            <label for="cleanCup">Clean Cup</label>
+                            <div class="score-description">Absence of off-flavors and taints</div>
+                        </div>
+                        <input type="number" id="cleanCup" name="cleanCup" min="1" max="9" step="0.25" class="score-input" required>
+                    </div>
+
+                    <div class="score-group">
+                        <div>
+                            <label for="sweetness">Sweetness</label>
+                            <div class="score-description">Natural sweetness and pleasantness</div>
+                        </div>
+                        <input type="number" id="sweetness" name="sweetness" min="1" max="9" step="0.25" class="score-input" required>
+                    </div>
+
+                    <div class="score-group">
+                        <div>
+                            <label for="overall">Overall Impression</label>
+                            <div class="score-description">Your personal assessment of the coffee's quality</div>
+                        </div>
+                        <input type="number" id="overall" name="overall" min="1" max="9" step="0.25" class="score-input" required>
+                    </div>
+                </div>
+
+                <!-- Defects -->
+                <div class="section defects-section">
+                    <h2>Defects</h2>
+                    <div class="form-group">
+                        <label for="defectiveCups">Number of Defective/Non-uniform Cups</label>
+                        <select id="defectiveCups" name="defectiveCups" required>
+                            <option value="0">0 cups</option>
+                            <option value="1">1 cup</option>
+                            <option value="2">2 cups</option>
+                            <option value="3">3 cups</option>
+                            <option value="4">4 cups</option>
+                            <option value="5">5 cups</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="defectNotes">Defect Notes (optional)</label>
+                        <textarea id="defectNotes" name="defectNotes" rows="3" placeholder="Describe any defects observed..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Descriptive Notes -->
+                <div class="section notes-section">
+                    <h2>Descriptive Assessment</h2>
+                    <div class="form-group">
+                        <label for="flavorNotes">Flavor Notes</label>
+                        <textarea id="flavorNotes" name="flavorNotes" rows="3" placeholder="Describe specific flavors (e.g., chocolate, citrus, floral...)"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="aromaDescription">Aroma Description</label>
+                        <textarea id="aromaDescription" name="aromaDescription" rows="2" placeholder="Describe the fragrance and aroma characteristics..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="additionalNotes">Additional Notes</label>
+                        <textarea id="additionalNotes" name="additionalNotes" rows="3" placeholder="Any other observations or comments..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Total Score Display -->
+                <div class="total-score">
+                    <h3 id="totalScore">Total Score: 0.00</h3>
+                    <p>Final Affective Assessment Score</p>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">Submit Assessment</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Print-only elements -->
+    <div class="print-qr" style="display: none;">
+        <div id="qrcode"></div>
+        <p>Scan for digital copy</p>
+    </div>
+    <div class="print-timestamp" style="display: none;">
+        <p id="printTimestamp"></p>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            FORMSPREE_URL: 'https://formspree.io/f/YOUR_FORM_ID',
+            EMAILJS_SERVICE_ID: 'YOUR_SERVICE_ID',
+            EMAILJS_TEMPLATE_ID: 'YOUR_TEMPLATE_ID',
+            EMAILJS_USER_ID: 'YOUR_USER_ID',
+            CUSTOM_ENDPOINT: 'https://your-backend.com/api/submit-assessment'
+        };
+
+        // Auto-save functionality
+        let autoSaveTimeout;
+        const AUTO_SAVE_DELAY = 2000; // 2 seconds
+
+        function showAutoSaveIndicator() {
+            const indicator = document.getElementById('autoSaveIndicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
+        }
+
+        function saveFormData() {
+            try {
+                const formData = new FormData(document.getElementById('coffeeAssessmentForm'));
+                const data = {};
+                for (let [key, value] of formData.entries()) {
+                    data[key] = value;
+                }
+                data.timestamp = new Date().toISOString();
+                data.totalScore = calculateTotalScore();
+                
+                sessionStorage.setItem('coffeeAssessmentData', JSON.stringify(data));
+                showAutoSaveIndicator();
+            } catch (error) {
+                console.error('Auto-save failed:', error);
+            }
+        }
+
+        function loadFormData() {
+            try {
+                const savedData = sessionStorage.getItem('coffeeAssessmentData');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    const form = document.getElementById('coffeeAssessmentForm');
+                    
+                    for (let [key, value] of Object.entries(data)) {
+                        if (key !== 'timestamp' && key !== 'totalScore') {
+                            const element = form.elements[key];
+                            if (element) {
+                                element.value = value;
+                            }
+                        }
+                    }
+                    calculateTotalScore();
+                }
+            } catch (error) {
+                console.error('Failed to load saved data:', error);
+            }
+        }
+
+        function clearSavedData() {
+            sessionStorage.removeItem('coffeeAssessmentData');
+        }
+
+        // Auto-save trigger
+        function triggerAutoSave() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(saveFormData, AUTO_SAVE_DELAY);
+        }
+
+        // Export functionality
+        function getFormData() {
+            const formData = new FormData(document.getElementById('coffeeAssessmentForm'));
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            data.totalScore = calculateTotalScore();
+            data.timestamp = new Date().toISOString();
+            data.assessmentId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            return data;
+        }
+
+        function exportToJSON() {
+            const data = getFormData();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `coffee-assessment-${data.sampleName || 'unknown'}-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function exportToCSV() {
+            const data = getFormData();
+            const headers = Object.keys(data);
+            const values = Object.values(data);
+            
+            const csvContent = [
+                headers.join(','),
+                values.map(value => `"${value}"`).join(',')
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `coffee-assessment-${data.sampleName || 'unknown'}-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function exportToPDF() {
+            // Simple PDF generation using print functionality
+            // For more advanced PDF generation, you could integrate jsPDF
+            const originalTitle = document.title;
+            const data = getFormData();
+            document.title = `Coffee Assessment - ${data.sampleName || 'Unknown'} - ${new Date().toLocaleDateString()}`;
+            
+            // Temporarily show print elements
+            document.querySelector('.print-qr').style.display = 'block';
+            document.querySelector('.print-timestamp').style.display = 'block';
+            document.getElementById('printTimestamp').textContent = `Generated: ${new Date().toLocaleString()}`;
+            
+            // Generate QR code with form data
+            generateQRCode(JSON.stringify(getFormData()));
+            
+            // Trigger print dialog
+            window.print();
+            
+            // Restore original state
+            setTimeout(() => {
+                document.title = originalTitle;
+                document.querySelector('.print-qr').style.display = 'none';
+                document.querySelector('.print-timestamp').style.display = 'none';
+            }, 1000);
+        }
+
+        function printForm() {
+            exportToPDF(); // Use the same logic as PDF export
+        }
+
+        // Simple QR Code generation (basic implementation)
+        function generateQRCode(data) {
+            const qrDiv = document.getElementById('qrcode');
+            // For a real implementation, you'd use a QR code library like qrcode.js
+            // This is a placeholder that shows the concept
+            qrDiv.innerHTML = `
+                <div style="width: 100px; height: 100px; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; text-align: center;">
+                    QR Code<br>Placeholder
+                </div>
+            `;
+            
+            // Here's how you'd implement with a real QR library:
+            /*
+            if (typeof QRCode !== 'undefined') {
+                qrDiv.innerHTML = '';
+                new QRCode(qrDiv, {
+                    text: data,
+                    width: 100,
+                    height: 100
+                });
+            }
+            */
+        }
+
+        // Score calculation (unchanged)
+        function calculateTotalScore() {
+            const scoreFields = ['aroma', 'flavor', 'aftertaste', 'acidity', 'body', 'uniformity', 'balance', 'cleanCup', 'sweetness', 'overall'];
+            let total = 0;
+            let filledScores = 0;
+
+            scoreFields.forEach(field => {
+                const value = parseFloat(document.getElementById(field).value);
+                if (!isNaN(value)) {
+                    total += value;
+                    filledScores++;
+                }
+            });
+
+            if (filledScores === scoreFields.length) {
+                const baseScore = (total * 10);
+                const defectiveCups = parseInt(document.getElementById('defectiveCups').value) || 0;
+                const defectPenalty = defectiveCups * 2;
+                const finalScore = Math.max(0, baseScore - defectPenalty);
+                
+                document.getElementById('totalScore').textContent = `Total Score: ${finalScore.toFixed(2)}`;
+                
+                let classification = '';
+                if (finalScore >= 85) classification = ' (Specialty Grade)';
+                else if (finalScore >= 80) classification = ' (Premium Grade)';
+                else if (finalScore >= 70) classification = ' (Commercial Grade)';
+                else classification = ' (Below Standard)';
+                
+                document.getElementById('totalScore').textContent += classification;
+                
+                return finalScore;
+            }
+            return 0;
+        }
+
+        // Email functionality (unchanged from original)
+        function prepareEmailContent(formData, finalScore) {
+            const timestamp = new Date().toLocaleString();
+            
+            return {
+                subject: `Coffee Assessment: ${formData.get('sampleName')} - Score: ${finalScore.toFixed(2)}`,
+                body: `
+COFFEE ASSESSMENT REPORT
+========================
+
+Assessment Details:
+- Coffee Name/Sample ID: ${formData.get('sampleName')}
+- Cupper: ${formData.get('cupper')}
+- Date: ${formData.get('date')}
+- Submission Time: ${timestamp}
+- Email: ${formData.get('email')}
+
+SCORES (1-9 Scale):
+- Aroma: ${formData.get('aroma')}
+- Flavor: ${formData.get('flavor')}
+- Aftertaste: ${formData.get('aftertaste')}
+- Acidity: ${formData.get('acidity')}
+- Body: ${formData.get('body')}
+- Uniformity: ${formData.get('uniformity')}
+- Balance: ${formData.get('balance')}
+- Clean Cup: ${formData.get('cleanCup')}
+- Sweetness: ${formData.get('sweetness')}
+- Overall: ${formData.get('overall')}
+
+DEFECTS:
+- Defective Cups: ${formData.get('defectiveCups')}
+- Defect Notes: ${formData.get('defectNotes') || 'None'}
+
+DESCRIPTIVE NOTES:
+- Flavor Notes: ${formData.get('flavorNotes') || 'None'}
+- Aroma Description: ${formData.get('aromaDescription') || 'None'}
+- Additional Notes: ${formData.get('additionalNotes') || 'None'}
+
+FINAL SCORE: ${finalScore.toFixed(2)}
+
+Assessment ID: ${Date.now()}-${Math.random().toString(36).substr(2, 9)}
+                `.trim()
+            };
+        }
+
+        // Submit functionality (unchanged)
+        async function submitViaFormspree(formData, emailContent) {
+            const submitData = new FormData();
+            for (let [key, value] of formData.entries()) {
+                submitData.append(key, value);
+            }
